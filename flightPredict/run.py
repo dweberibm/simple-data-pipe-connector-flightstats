@@ -37,8 +37,10 @@ def getWeather(airportCode, dtString):
     url=schema + f.cloudantHost+'/flight-metadata/_design/flightMetadata/_view/US%20Airports?include_docs=true&key=%22'+airportCode+'%22'
     response = requests.get(url,auth=(f.cloudantUserName, f.cloudantPassword))
     doc = response.json()['rows'][0]['doc']
-    url=f.weatherUrl +'/api/weather/v2/forecast/hourly/24hour'
-    forecasts=requests.get(url, params=[('geocode',str(doc['latitude'])+','+str(doc['longitude'])),('units','m'),('language','en-US')]).json()['forecasts']
+    # url=f.weatherUrl +'/api/weather/v2/forecast/hourly/24hour'
+    #forecasts=requests.get(url, params=[('geocode',str(doc['latitude'])+','+str(doc['longitude'])),('units','m'),('language','en-US')]).json()['forecasts']
+    url=f.weatherUrl + '/api/weather/v1/geocode/' + str(doc['latitude']) + '/' str(doc['longitude']) + '/observations/timeseries.json?hours=23'
+    forecasts=requests.get(url).json()['forecasts']
     #find the forecasts that is closest to dt.tm_hour
     weatherForecast=None
     for f in forecasts:
